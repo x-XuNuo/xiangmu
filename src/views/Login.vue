@@ -88,7 +88,7 @@ export default {
             data : this.form
           }).then(({data : {data,meta}}) =>{
             if(meta.status == 200){
-              // localStorage.setItem("token", data.token);
+              localStorage.setItem("token", data.token);
               this.$router.push("/home")
             }
           });
