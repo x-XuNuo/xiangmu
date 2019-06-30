@@ -1,141 +1,52 @@
 <template>
-  <el-container>
-    <el-header>
-      <el-row type="flex" justify="space-between">
-        <el-col :span="6">
-          <img src="../assets/logo.png" alt />
-        </el-col>
-        <el-col>
-          <h1>品优购后台管理系统</h1>
-        </el-col>
-        <el-col :span="6" class="header-right">
-          <div>
-            欢迎39期会员
-            <a href="##">退出</a>
-          </div>
-        </el-col>
-      </el-row>
-    </el-header>
+  <div>
+    <el-table :data="userList" stripe style="width: 100%">
+      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+      <el-table-column prop="mobile" label="电话"></el-table-column>
 
-    <el-container>
-      <el-aside width="200px">
-        <el-menu
-          default-active="3"
-          class="el-menu-vertical-demo"
-          background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-          :unique-opened="true"
-          :router="true"
-        >
-          <el-submenu index="1">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>用户管理</span>
-            </template>
-            <el-menu-item index="/user">
-              <i class="el-icon-menu"></i>
-              <span>用户管理</span>
-            </el-menu-item>
-          </el-submenu>
-
-          <el-submenu index="2">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>权限管理</span>
-            </template>
-            <el-menu-item index="2-1">
-              <i class="el-icon-menu"></i>
-              <span>角色列表</span>
-            </el-menu-item>
-            <el-menu-item index="2-2">
-              <i class="el-icon-menu"></i>
-              <span>权限列表</span>
-            </el-menu-item>
-          </el-submenu>
-
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>商品管理</span>
-            </template>
-            <el-menu-item index="3-1">
-              <i class="el-icon-menu"></i>
-              <span>商品列表</span>
-            </el-menu-item>
-            <el-menu-item index="3-2">
-              <i class="el-icon-menu"></i>
-              <span>分类参数</span>
-            </el-menu-item>
-            <el-menu-item index="3-3">
-              <i class="el-icon-menu"></i>
-              <span>商品分类</span>
-            </el-menu-item>
-          </el-submenu>
-
-          <el-submenu index="4">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>订单管理</span>
-            </template>
-            <el-menu-item index="4-1">
-              <i class="el-icon-menu"></i>
-              <span>订单列表</span>
-            </el-menu-item>
-          </el-submenu>
-
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>数据统计</span>
-            </template>
-            <el-menu-item index="5-1">
-              <i class="el-icon-menu"></i>
-              <span>数据列表</span>
-            </el-menu-item>
-          </el-submenu>
-        </el-menu>
-      </el-aside>
-      <el-main>Main</el-main>
-    </el-container>
-  </el-container>
+      <!-- 如果当前列中不会把数据直接展示出来，那么就没有必要为当前列设置prop属性 -->
+      <el-table-column label="用户状态">
+        <!-- 在这里，无法直接获取到每一行的数据，这个数据在el-table表格组件中 -->
+        <!-- 如果要获取每一行的数据，那么我们就需要通过作用于插槽的方式，把数据接收到 -->
+        
+        <template v-slot="{row}">
+          <el-switch v-model="row.type" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <el-button type="primary" plain size="mini" icon="el-icon-edit"></el-button>
+        <el-button type="danger" plain size="mini" icon="el-icon-delete"></el-button>
+        <el-button type="success" plain size="mini" icon="el-icon-check">分配角色</el-button>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
-
-<script>
-export default {};
+// <script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      userList: []
+    };
+  },
+  created() {
+    axios({
+      url: "http://localhost:8888/api/private/v1/users",
+      params: {
+        pagenum: 1,
+        pagesize: 5
+      },
+      headers: {
+        Authorization: localStorage.getItem("token")
+      }
+    }).then(res => {
+      let {
+        data: { data, meta }
+      } = res;
+      this.userList = data.users;
+    });
+  }
+};
 </script>
-
-<style>
-.el-container {
-  height: 100%;
-}
-.el-container .el-header {
-  line-height: 60px;
-  background-color: #b3c1cd;
-  padding: 0;
-}
-.el-container .el-header img {
-  width: 200px;
-}
-.el-container .el-header h1 {
-  font-size: 28px;
-  color: #fff;
-  font-weight: bolder;
-  padding: 0;
-  margin: 0;
-  text-align: center;
-}
-.header-right {
-  font-weight: bolder;
-  text-align: right;
-  padding-right: 20px;
-}
-.el-container .el-header div a {
-  color: orange;
-}
-.el-menu {
-  height: 100%;
-}
-</style>
-
