@@ -20,9 +20,7 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
-          :default-active="$route.path"
-          设置默认高亮的菜单项
-          赋值的内容为菜单项的index值
+          default-active="3"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
@@ -98,7 +96,7 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main></el-main>
+      <el-main>Main</el-main>
     </el-container>
   </el-container>
 </template>
