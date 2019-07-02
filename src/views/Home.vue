@@ -11,7 +11,7 @@
         <el-col :span="6" class="header-right">
           <div>
             欢迎39期会员
-            <a href="##">退出</a>
+            <a href="##" @click.prevent="logout">退出</a>
           </div>
         </el-col>
       </el-row>
@@ -107,7 +107,17 @@
 
 
 <script>
-export default {};
+export default {
+  // 退出功能
+  methods : {
+    logout(){
+      // 清空token
+      localStorage.removeItem("token")
+      // 跳转到登录页
+      this.$router.push("/login")
+    }
+  }
+};
 </script>
 
 <style>

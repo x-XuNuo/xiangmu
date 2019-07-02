@@ -89,7 +89,7 @@
 
     <!-- 修改模态框 -->
     
-    <el-dialog title="修改用户信息" :visible.sync="isAddUserDialogShow"
+    <el-dialog title="修改用户信息" :visible.sync="isEditUserDialogShow"
     @close="$refs.editUserForm.resetFields()">
       <el-form :model="editUserFormData" label-width="100px" :rules="editUserRules" ref="editUserForm">
         <el-form-item label="用户名" prop="username">
@@ -327,7 +327,7 @@ export default {
     //修改功能
     async openEditUserDialog(id){
       // 1.打开模态框
-      this.isAddUserDialogShow=true;
+      this.isEditUserDialogShow=true;
       // 2.用id去后台获取数据。展示到模态框  
       // 发送ajax
       let res = await axios ({
@@ -373,7 +373,7 @@ export default {
           //重新渲染页面
           this.getUserList();
           // 模态框隐藏
-          this.isAddUserDialogShow=false;
+          this.isEditUserDialogShow=false;
         }else{
           // 提醒用户错误
           this.$message({
