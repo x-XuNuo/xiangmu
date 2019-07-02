@@ -20,7 +20,7 @@
         </el-input>
       </el-col>
       <el-col :span="6">
-        <el-button type="success" plain>添加用户</el-button>
+        <el-button type="success" plain @click="openAddUserDialog">添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 数据 -->
@@ -46,7 +46,7 @@
       <!-- 三个操作 -->
       <el-table-column label="操作">
         <template v-slot="{row}">
-          <el-button type="primary" plain size="mini" icon="el-icon-edit"></el-button>
+          <el-button type="primary" plain size="mini" icon="el-icon-edit" @click ="openEditUserDialog(row.id)"></el-button>
           <el-button type="danger" plain size="mini" icon="el-icon-delete" @click="delUser(row.id)"></el-button>
           <el-button type="success" plain size="mini" icon="el-icon-check">分配角色</el-button>
         </template>
@@ -63,6 +63,51 @@
       :current-page="currentpage"
       @current-change="onPageChange"
     ></el-pagination>
+
+    <!-- 添加模态框 -->
+    <el-dialog title="添加用户" :visible.sync="isAddUserDialogShow">
+      <el-form :model="addUserFormData" label-width="100px" :rules="addUserRules" ref="addUserForm">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addUserFormData.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addUserFormData.password" autocomplete="off" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addUserFormData.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="mobile">
+          <el-input v-model="addUserFormData.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isAddUserDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </div>
+    </el-dialog>
+
+
+    <!-- 修改模态框 -->
+    
+    <el-dialog title="修改用户信息" :visible.sync="isAddUserDialogShow"
+    @close="$refs.editUserForm.resetFields()">
+      <el-form :model="editUserFormData" label-width="100px" :rules="editUserRules" ref="editUserForm">
+        <el-form-item label="用户名" prop="username">
+          <el-tag type="info" v-text="editUserFormData.username"></el-tag>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email"> 
+          <el-input v-model="editUserFormData.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="mobile">
+         <el-input v-model="editUserFormData.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isAddUserDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click ="editUser">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -75,14 +120,92 @@ export default {
       total: 0,
       pagesize: 3,
       currentpage: 1,
-      keyword: ""
+      keyword: "",
+      isAddUserDialogShow: false,
+      // 添加用户数据
+      addUserFormData: {
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
+      },
+      // 添加用户校验规则
+      addUserRules: {
+        username: [
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: "blur"
+          },
+          {
+            min: 5,
+            max: 12,
+            message: "长度在 5 到 12 个字符",
+            trigger: "change"
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur"
+          },
+          {
+            min: 6,
+            max: 10,
+            message: "长度在 6 到 10 个字符",
+            trigger: "change"
+          }
+        ],
+        email: [
+          {
+            pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
+            message: "邮箱格式不正确",
+            trigger: "change"
+          }
+        ],
+        mobile: [
+          {
+            pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+            message: "手机号码格式不正确",
+            trigger: "change"
+          }
+        ]
+      },
+      // 修改用户数据
+      editUserFormData : {
+        id : 0,
+        username : "",
+        email : "",
+        mobile : ""
+      },
+      isAddUserDialogShow :false,
+      // 修改数据表单校验
+      editUserRules: {
+        email : [
+          
+          {
+            pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
+            message: "邮箱格式不正确",
+            trigger: "change"
+          }
+          
+        ],
+        mobile: [
+          {
+            pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+            message: "手机号码格式不正确",
+            trigger: "change"
+          }
+        ]
+
+      }
     };
   },
   // 发送ajax请求
   created() {
     this.getUserList();
   },
-
 
   methods: {
     getUserList() {
@@ -155,6 +278,117 @@ export default {
 
       this.getUserList();
     },
+    //添加模态框
+    openAddUserDialog() {
+      this.isAddUserDialogShow = true;
+    },
+    // 添加功能
+    async addUser() {
+      // 成功函数
+      try {
+        await this.$refs.addUserForm.validate();
+        // 发送ajax请求
+        let res = await axios({
+          // 地址
+          url: "http://localhost:8888/api/private/v1/users",
+          // 请求方式
+          method: "post",
+          // 数据为当前表格数据
+          data: this.addUserFormData,
+          // 获取token
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+        });
+        // 数据请求成功
+        if (res.data.meta.status == 201) {
+          // 弹出成功提示
+          this.$message({
+            message: res.data.meta.msg,
+            type: "success",
+            duration: 1000
+          });
+          // 重新渲染页面
+          this.getUserList();
+          // 模态框隐藏
+          this.isAddUserDialogShow = false;
+        } else {
+          // 数据请求失败 弹出失败提示
+          this.$message({
+            message: res.data.meta.msg,
+            type: "error",
+            duration: 1000
+          });
+        }
+      } 
+      // 失败
+      catch (err) {}
+    },
+    //修改功能
+    async openEditUserDialog(id){
+      // 1.打开模态框
+      this.isAddUserDialogShow=true;
+      // 2.用id去后台获取数据。展示到模态框  
+      // 发送ajax
+      let res = await axios ({
+        url : `http://localhost:8888/api/private/v1/users/${id}`,
+          // 获取token
+          headers: {
+            Authorization: localStorage.getItem("token")
+          }
+      })
+      // 模态框内容为当前的数据
+      this.editUserFormData = res.data.data;
+    },
+    async editUser (){
+      
+      // 成功时
+      try{
+
+        await this.$refs.editUserForm.validate()
+
+        // 向后台请求数据
+        let res =  await axios ({
+          // 地址id为当前当前模态框的id
+          url : `http://localhost:8888/api/private/v1/users/${this.editUserFormData.id}`,
+          // 获取token
+          headers: {
+            Authorization: localStorage.getItem("token")
+          },
+          // 请求方式
+          method : "put",
+          // 数据为当前修改后的数据
+          data :{
+            mobile : this.editUserFormData.mobile,
+            email : this.editUserFormData.email,
+          }
+        })
+        if(res.data.meta.status == 200){
+          // 提醒用户更新成功
+          this.$message({
+            type : "success",
+            message : res.data.meta.msg,
+            duration : 1000
+          })
+          //重新渲染页面
+          this.getUserList();
+          // 模态框隐藏
+          this.isAddUserDialogShow=false;
+        }else{
+          // 提醒用户错误
+          this.$message({
+            type : "erros",
+            message : res.data.meta.msg,
+            duration : 1000
+          })
+        }
+
+      }
+      // 失败
+      catch(err){
+
+      }
+    }
   }
 };
 </script>
