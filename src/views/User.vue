@@ -367,6 +367,7 @@ export default {
     }
   }
 };
+console.log(1111)
 </script>
 <style>
 .el-breadcrumb.breadcrumb {
