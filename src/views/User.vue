@@ -112,7 +112,6 @@
 </template>
 
 // <script>
-import axios from "axios";
 export default {
   data() {
     return {
@@ -209,17 +208,14 @@ export default {
 
   methods: {
     getUserList() {
-      axios({
+      this.$http({
         // 地址
-        url: "http://localhost:8888/api/private/v1/users",
+        url: "users",
         params: {
           query: this.keyword,
           pagenum: this.currentpage,
           pagesize: this.pagesize
         },
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
       }).then(res => {
         let {
           data: { data, meta }
@@ -240,12 +236,9 @@ export default {
     // 状态修改
     async toggleState(user) {
       // 在这里应该给后台发送数据请求，将当前用户的状态进行修改
-      let res = await axios({
-        url: `http://localhost:8888/api/private/v1/users/${user.id}/state/${user.mg_state}`,
+      let res = await this.$http({
+        url: `users/${user.id}/state/${user.mg_state}`,
         method: "put",
-        headers: {
-          Authorization: localStorage.getItem("token")
-        }
       });
       this.getUserList();
     },
@@ -258,12 +251,9 @@ export default {
           type: "warning"
         });
         // console.log(111)
-        let res = await axios({
-          url: `http://localhost:8888/api/private/v1/users/${id}`,
+        let res = await this.$http({
+          url: `users/${id}`,
           method: "delete",
-          headers: {
-            Authorization: localStorage.getItem("token")
-          }
         });
         this.$message({
           type: "success",
@@ -288,17 +278,13 @@ export default {
       try {
         await this.$refs.addUserForm.validate();
         // 发送ajax请求
-        let res = await axios({
+        let res = await this.$http({
           // 地址
-          url: "http://localhost:8888/api/private/v1/users",
+          url: "users",
           // 请求方式
           method: "post",
           // 数据为当前表格数据
           data: this.addUserFormData,
-          // 获取token
-          headers: {
-            Authorization: localStorage.getItem("token")
-          }
         });
         // 数据请求成功
         if (res.data.meta.status == 201) {
@@ -330,12 +316,8 @@ export default {
       this.isEditUserDialogShow=true;
       // 2.用id去后台获取数据。展示到模态框  
       // 发送ajax
-      let res = await axios ({
-        url : `http://localhost:8888/api/private/v1/users/${id}`,
-          // 获取token
-          headers: {
-            Authorization: localStorage.getItem("token")
-          }
+      let res = await this.$http ({
+        url : `users/${id}`,
       })
       // 模态框内容为当前的数据
       this.editUserFormData = res.data.data;
@@ -348,13 +330,9 @@ export default {
         await this.$refs.editUserForm.validate()
 
         // 向后台请求数据
-        let res =  await axios ({
+        let res =  await this.$http ({
           // 地址id为当前当前模态框的id
-          url : `http://localhost:8888/api/private/v1/users/${this.editUserFormData.id}`,
-          // 获取token
-          headers: {
-            Authorization: localStorage.getItem("token")
-          },
+          url : `users/${this.editUserFormData.id}`,
           // 请求方式
           method : "put",
           // 数据为当前修改后的数据
@@ -383,9 +361,7 @@ export default {
           })
         }
 
-      }
-      // 失败
-      catch(err){
+      }catch(err){
 
       }
     }

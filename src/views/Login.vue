@@ -36,8 +36,6 @@
 // 3. 需要把这个校验规则对象绑定到el-form组件上 :rules="校验规则则对象"
 // 4. 需要给每一项被校验的el-form-item组件添加 prop属性 属性值就是 绑定的数据的名称
 
-import axios from "axios";
-
 export default {
   data() {
     return {
@@ -52,11 +50,11 @@ export default {
             message: "请输入用户名",
             trigger: "blur"
           },
-          { 
-            min: 5, 
-            max: 15, 
-            message: "用户名长度在 5 到 15 个字符", 
-            trigger: "change" 
+          {
+            min: 5,
+            max: 15,
+            message: "用户名长度在 5 到 15 个字符",
+            trigger: "change"
           }
         ],
         password: [
@@ -65,40 +63,67 @@ export default {
             message: "请输入密码",
             trigger: "blur"
           },
-          { 
-            min: 6, 
-            max: 10, 
-            message: "密码长度在 6 到 10 个字符", 
-            trigger: "change" 
+          {
+            min: 6,
+            max: 10,
+            message: "密码长度在 6 到 10 个字符",
+            trigger: "change"
           }
         ]
       }
     };
   },
   methods: {
-    submitForm(formName) {
+    async submitForm(formName) {
+      let valid = await this.$refs[formName].validate();
 
-      this.$refs[formName].validate(valid => {
-
-        if (valid) {
-          
-          axios({
-            url : "http://localhost:8888/api/private/v1/login",
-            method : "post",
-            data : this.form
-          }).then(({data : {data,meta}}) =>{
-            if(meta.status == 200){
-              localStorage.setItem("token", data.token);
-              this.$router.push("/home")
-            }else{
-              this.$message.error('用户名或密码错误');
-            }
+      if (valid) {
+        try {
+          let res = await this.$http({
+            url: "login",
+            method: "post",
+            data: this.form
           });
-        } else {
-          return false;
+          if(res.data.meta.status == 200){
+            localStorage.setItem("token",
+            res.data.data.token);
+            this.$router.push("/home")
+          } else {
+            this.$message({
+              message : res.data.meta.msg,
+              type : "error",
+              duration : 1000
+            })
+          }
+        } catch (err) {
+          console.log("请求发送失败", err);
         }
-      });
+      } else {
+        return false;
+      }
+
+
+    //   let valid = await this.$refs[formName].validate(valid => {
+    //     if (valid) {
+    //       axios({
+    //         url: "login",
+    //         method: "post",
+    //         data: this.form
+    //       }).then(({ data: { data, meta } }) => {
+    //         if (meta.status == 200) {
+    //           localStorage.setItem("token", data.token);
+    //           this.$router.push("/home");
+    //         } else {
+    //           this.$message.error("用户名或密码错误");
+    //         }
+    //       });
+    //     } else {
+    //       return false;
+    //     }
+    //   });
     },
+
+
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }
