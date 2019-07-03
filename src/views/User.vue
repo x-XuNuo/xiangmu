@@ -114,6 +114,9 @@
 <script>
 
 console.log(11111)
+console.log(222)
+console.log(3333)
+console.log(4444)
 export default {
   data() {
     return {
