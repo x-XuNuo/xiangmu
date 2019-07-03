@@ -103,7 +103,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="isAddUserDialogShow = false">取 消</el-button>
+        <el-button @click="isEditUserDialogShow = false">取 消</el-button>
         <el-button type="primary" @click ="editUser">确 定</el-button>
       </div>
     </el-dialog>
@@ -111,7 +111,9 @@
   </div>
 </template>
 
-// <script>
+<script>
+
+console.log(11111)
 export default {
   data() {
     return {
@@ -178,7 +180,7 @@ export default {
         email : "",
         mobile : ""
       },
-      isAddUserDialogShow :false,
+      isEditUserDialogShow :false,
       // 修改数据表单校验
       editUserRules: {
         email : [
@@ -367,7 +369,6 @@ export default {
     }
   }
 };
-console.log(1111)
 </script>
 <style>
 .el-breadcrumb.breadcrumb {
