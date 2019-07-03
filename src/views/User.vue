@@ -112,11 +112,6 @@
 </template>
 
 <script>
-
-console.log(11111)
-console.log(222)
-console.log(3333)
-console.log(4444)
 export default {
   data() {
     return {
@@ -372,6 +367,8 @@ export default {
     }
   }
 };
+
+console.log(123456789)
 </script>
 <style>
 .el-breadcrumb.breadcrumb {
