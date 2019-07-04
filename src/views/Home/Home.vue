@@ -3,7 +3,7 @@
     <el-header>
       <el-row type="flex" justify="space-between">
         <el-col :span="6">
-          <img src="../assets/logo.png" alt />
+          <img src="../../assets/logo.png" alt />
         </el-col>
         <el-col>
           <h1>品优购后台管理系统</h1>
@@ -46,11 +46,11 @@
               <i class="el-icon-location"></i>
               <span>权限管理</span>
             </template>
-            <el-menu-item index="2-1">
+            <el-menu-item index="/rloes">
               <i class="el-icon-menu"></i>
               <span>角色列表</span>
             </el-menu-item>
-            <el-menu-item index="2-2">
+            <el-menu-item index="/rights">
               <i class="el-icon-menu"></i>
               <span>权限列表</span>
             </el-menu-item>
