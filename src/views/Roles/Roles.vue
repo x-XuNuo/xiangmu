@@ -17,14 +17,14 @@
           <!-- 获取一级菜单 el-row level1 -->
           <el-row v-for="level1 in row.children" :key="level1.id" class="level1" type="flex">
             <el-col :span="6">
-              <el-tag closable>{{level1.authName}}</el-tag>
+              <el-tag closable @close = "deleteRight(row,level1.id)">{{level1.authName}}</el-tag>
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <!-- 二级菜单 -->
             <el-col>
               <el-row v-for="level2 in level1.children" :key="level2.id" class="level2" type="flex">
                 <el-col :span="6">
-                  <el-tag closable type="success">{{level2.authName}}</el-tag>
+                  <el-tag closable type="success"  @close = "deleteRight(row,level2.id)">{{level2.authName}}</el-tag>
                   <i class="el-icon-arrow-right"></i>
                 </el-col>
                 <!-- 三级菜单 -->
@@ -34,6 +34,7 @@
                     type="warning"
                     class="level3"
                     v-for="level3 in level2.children"
+                    @close = "deleteRight(row,level3.id)"
                     :key="level3.id"
                   >{{level3.authName}}</el-tag>
                 </el-col>
@@ -110,7 +111,51 @@ export default {
     };
   },
   methods: {
-    // 点击模态框确定
+
+    // 标签删除
+    async deleteRight(row,id){
+      // 把row里面children中所有的id拼接成一个数组
+       // 获取一级权限的id，组合成数组
+      let level1Ids = [];
+      let level2Ids = [];
+      let level3Ids = [];
+     
+      // 获取二级权限的id，合成数组
+      row.children.forEach(level1 =>{
+        level1Ids.push(level1.id);
+        level1.children.forEach(level2 => {
+          level2Ids.push(level2.id);
+          level2.children.forEach(level3 => {
+            level3Ids.push(level3.id)
+          });
+        });
+      });
+      let result = [...level1Ids , ...level2Ids , ...level3Ids];
+      // 数组中的id对应的元素删除掉
+      // 再拼接成字符串ids
+      let ids = result.filter( v => v !== id).join();
+
+      // 发送axios请求
+      let res = await this.$http({
+        url : `roles/${row.id}/rights`,
+        method : "post",
+        data : {
+          rids : ids
+        }
+      });
+      // console.log(res)
+      // 弹出提示
+      this.$message({
+        type : "success",
+        message : res.data.meta.msg,
+        duration :1000
+      });
+
+      this.getRoleList()
+    },
+
+
+    // 点击确定
     async updateRoleRights (){
       // 1. 获取tree组件中，所有被勾选的节点的id
   
