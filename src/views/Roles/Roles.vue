@@ -9,7 +9,7 @@
 
     <!-- 数据列表 -->
 
-    <el-table :data="roseList" stripe style="width: 100%">
+    <el-table ref="roleTable" :data="roseList" stripe style="width: 100%">
       <!-- 通过设置 type="expand" 和 Scoped slot 可以开启展开行功能，el-table-column 的模板会被渲染成为展开行的内容，展开行可访问的属性与使用自定义列模板时的 Scoped slot 相同。 -->
       <el-table-column type="expand">
         <!-- 展开菜单内容 -->
@@ -114,44 +114,36 @@ export default {
 
     // 标签删除
     async deleteRight(row,id){
-      // 把row里面children中所有的id拼接成一个数组
-       // 获取一级权限的id，组合成数组
-      let level1Ids = [];
-      let level2Ids = [];
-      let level3Ids = [];
-     
-      // 获取二级权限的id，合成数组
-      row.children.forEach(level1 =>{
-        level1Ids.push(level1.id);
-        level1.children.forEach(level2 => {
-          level2Ids.push(level2.id);
-          level2.children.forEach(level3 => {
-            level3Ids.push(level3.id)
-          });
-        });
-      });
-      let result = [...level1Ids , ...level2Ids , ...level3Ids];
-      // 数组中的id对应的元素删除掉
-      // 再拼接成字符串ids
-      let ids = result.filter( v => v !== id).join();
+      console.log("删除单个元素")
+      // 调用接口，删除当前角色指定的权限信息
 
-      // 发送axios请求
+      // 接口信息
+      //  roles/:id/rights/:rightID
+      // method: delete
       let res = await this.$http({
-        url : `roles/${row.id}/rights`,
-        method : "post",
-        data : {
-          rids : ids
-        }
-      });
-      // console.log(res)
-      // 弹出提示
-      this.$message({
-        type : "success",
-        message : res.data.meta.msg,
-        duration :1000
+        url : `roles/${row.id}/rights/${id}`,
+        method : "delete"
       });
 
-      this.getRoleList()
+      console.log(res)
+
+      if(res.data.meta.status == 200){
+        this.$message({
+          type : "success",
+          message : res.data.meta.msg,
+          duration : 1000
+        });
+
+        this.getRoleList( () => {
+          this.$nextTick(() => {
+           //让表格对应的项展开即可
+            this.$refs.roleTable.toggleRowExpansion(
+              this.roseList.find(v => v.id == row.id),
+              true
+            )
+          })
+        })
+      }
     },
 
 
@@ -223,13 +215,12 @@ export default {
       this.checkedRights = [...level1Ids , ...level2Ids , ...level3Ids]
     },
 
-    async getRoleList(t = () =>{}){
+    async getRoleList(){
     let res = await this.$http({
       url: "roles"
     });
     // console.log(res);
     this.roseList = res.data.data;
-    t()
     }
   },
  created() {
