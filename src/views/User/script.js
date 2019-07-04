@@ -85,7 +85,14 @@ export default {
           }
         ]
 
-      }
+      },
+      isAssainRoleDialogShow : false,
+      
+      assainRoleData : {
+        rid : "",
+        username :"",
+      },
+      roleList : []
     };
   },
   // 发送ajax请求
@@ -209,6 +216,46 @@ export default {
       // 模态框内容为当前的数据
       this.editUserFormData = res.data.data;
     },
+
+    // 分配角色
+    async showAssainRoleDialog(row){
+      // 显示模态框
+      this.isAssainRoleDialogShow = true
+      // 发送请求获取数据
+      let res = await this.$http ({
+        url : `users/${row.id}`
+      })
+      // console.log(res)
+      this.assainRoleData = res.data.data
+
+      let roleResult = await this.$http({
+        url : "roles",
+      })
+      this.roleList = roleResult.data.data
+    },
+  
+    // 修改完成确定
+    async updateRole(){
+      let res = await this.$http({
+        url : `users/${this.assainRoleData.id}/role`,
+        method : "put",
+        data : {
+          rid :this.assainRoleData.rid
+        }
+      });
+      
+      // 成功弹窗
+      this.$message({
+        type : "success",
+        message : res.data.meta.msg,
+        duration : 1000
+      });
+
+      // 模态框隐藏
+      this.isAssainRoleDialogShow = false;
+    },
+    
+
     async editUser (){
       
       // 成功时
