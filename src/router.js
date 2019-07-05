@@ -22,11 +22,11 @@ const router = new Router({
         {
           // 如果给path加上/  变成/user   那么访问的时候直接 使用 /user
           // 如果不加/  那么访问的时候直接  /home/user
-          path : "/user",
+          path : "/users",
           component : User
         },
         {
-        path : "/rloes",
+        path : "/roles",
         component : Roles
       },
       {
