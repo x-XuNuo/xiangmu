@@ -75,7 +75,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="isShowAddCateDialog = false">取 消</el-button>
-        <el-button type="primary" @click="isShowAddCateDialog = false">确 定</el-button>
+        <el-button type="primary" @click="addCate">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -109,17 +109,18 @@ export default {
       pagesize: 5,
       total: 0,
       isShowAddCateDialog: false,
-      addCateFormData : {
-        cat_name : "",
-        parentArr : []
+      addCateFormData: {
+        cat_name: "",
+        parentArr: []
       },
-      cateOptions :[],
-      defaultProps : {
-        value : "cat_id",
-        label : "cat_name",
-        checkStrictly : true
+      // 添加分类的时候，所有的父类列表 最终是要展示在级联选择器中的
+      cateOptions: [],
+      // 级联选择器中绑定数据需要用props配置,获取数据为value，内容为label。 checkStrictly为是否只选择一级
+      defaultProps: {
+        value: "cat_id",
+        label: "cat_name",
+        checkStrictly: true
       }
-
     };
   },
   created() {
@@ -135,22 +136,64 @@ export default {
           pagesize: this.pagesize
         }
       });
-      console.log(res);
+      // console.log(res);
       this.categoryList = res.data.data.result;
       this.total = res.data.data.total;
+    },
+
+    // 添加功能
+    async addCate() {
+      // 1. 获取表单数据 cat_name cat_level cat_pid
+      // cat_name为当前输入的内容
+      let cat_name = this.addCateFormData.cat_name;
+      //this.addCateFormData.parentArr 里面存放所有的父分类的id
+      // cat_level 为当前父分类id的长度
+      let cat_level = this.addCateFormData.parentArr.length;
+      // cat_pid 只需要父分类的id的最后一个，要是想添加一级分类就位0；
+      let cat_pid = this.addCateFormData.parentArr.pop() || 0;
+
+      // 发送axios请求
+      let res = await this.$http({
+        url : "categories",
+        method : "post",
+        data : {
+          cat_name,
+          cat_level,
+          cat_pid
+        }
+      })
+      console.log(res);
+      // 判断状态弹框
+      if(res.data.meta.status == 201){
+        this.$message ({
+          type : "success",
+          message: res.data.meta.msg,
+          duration : 1000,
+        })
+
+        // 关闭模态框
+        this.isShowAddCateDialog = false;
+
+        // 重置表单
+        this.$refs.addCateForm.resetFields();
+        // 重新渲染
+        this.getCategoryList();
+      }
     },
 
     // 模态框
 
     async showAddCateDialog() {
       // 发送axios获取数据
+      // 由于添加分类的时候，最多可能添加的是3级分类
+      // 所以请求回来的数据，只需要有前两级即可，不需要第三级
       let res = await this.$http({
         url: "categories",
         params: {
           type: 2
         }
       });
-      this.cateOptions = res.data.data
+      this.cateOptions = res.data.data;
 
       this.isShowAddCateDialog = true;
     },
