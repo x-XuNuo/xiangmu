@@ -175,7 +175,7 @@ export default {
 </script>
 
 <style >
-/* .quill-editor{
-    height: 200px;
-  } */
+.ql-container{
+    height: 150px;
+  }
 </style>
