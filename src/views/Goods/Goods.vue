@@ -8,7 +8,7 @@
     </el-breadcrumb>
 
     <!-- 添加按钮 -->
-    <el-button type="success" plain>添加商品</el-button>
+    <el-button type="success" plain @click ="$router.push('goods-add')">添加商品</el-button>
 
     <!-- 数据 -->
     <el-table ref="singleTable" :data="goodsList" highlight-current-row style="width: 100%" stripe>
