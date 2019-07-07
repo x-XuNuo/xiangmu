@@ -27,13 +27,19 @@ axios.interceptors.request.use(function(config) {
 });
 
 // 设置axios的响应拦截器
-// axios.interceptors.response.use(function (response) {
-//   // Do something with response data
-//   return response;
-// }, function (error) {
-//   // Do something with response error
-//   return Promise.reject(error);
-// });
+axios.interceptors.response.use(function (response) {
+  // Do something with response data
+  if(response.data.meta.status ==401){
+    
+    router.push("/login")
+    this.$message({
+      type : "error",
+      message : response.data.meta.msg,
+      duration :1000,
+    })
+  }
+  return response;
+});
 
 // 把axios添加到Vue原型
 Vue.prototype.$http = axios
