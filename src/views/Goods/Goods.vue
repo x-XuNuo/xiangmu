@@ -16,7 +16,11 @@
       <el-table-column property="goods_name" label="商品名称"></el-table-column>
       <el-table-column property="goods_price" label="商品价格"></el-table-column>
       <el-table-column property="goods_number" label="商品重量"></el-table-column>
-      <el-table-column property="add_time" label="创建时间"></el-table-column>
+      <el-table-column label="创建时间">
+        <template v-slot= "{row}">
+          {{row.add_time | timeformat}}
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template>
           <el-button type="primary" plain size="mini" icon="el-icon-edit"></el-button>
@@ -40,7 +44,13 @@
 
 
 <script>
+import moment from 'moment'
 export default {
+  filters : {
+    timeformat(value){
+      return moment.unix(value).format("YYYY-MM-DD HH:mm:ss")
+    }
+  },
   data() {
     return {
       goodsList: [],

@@ -1,13 +1,19 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Login from "./views/Login/Login.vue"
-import Home from "./views/Home/Home.vue"
-import User from "./views/User/User.vue"
-import Roles from "./views/Roles/Roles.vue"
-import Rights from "./views/Rights/Rights.vue"
-import Goods from "./views/Goods/Goods.vue"
-import Categories from "./views/Goods/Categories.vue"
-import GoodsAdd from "./views/Goods/GoodsAdd.vue"
+
+// 路由懒加载
+// 异步组件可以定义为返回Promise的工厂函数
+
+// const 文件名 =() => import( "路径")
+// /* webpackChunkName: "group-foo" */ 可以设定打包名字
+const Home =() => import( "./views/Home/Home.vue")
+const User =() => import( "./views/User/User.vue")
+const Roles =() => import( "./views/Roles/Roles.vue")
+const Rights =() => import( "./views/Rights/Rights.vue")
+const Goods =() => import( "./views/Goods/Goods.vue")
+const Categories =() => import( "./views/Goods/Categories.vue")
+const GoodsAdd =() => import( "./views/Goods/GoodsAdd.vue")
 
 Vue.use(Router);
 

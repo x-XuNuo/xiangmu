@@ -17,7 +17,7 @@
     <!-- 步骤条 -->
     <!-- v-model="activeName" v-model属性用来绑定 当前正在激活的标签的name -->
     <!-- value可以实现，标签切换 -->
-    <el-tabs tab-position="left" style="marginTop:20px;" @tab-click="changeTab" :value="activeName">
+    <el-tabs tab-position="left" style="marginTop:20px;" @tab-click="changeTab" v-model="activeName">
       <el-tab-pane label="基本信息" name="basic">
         <!-- 基本信息页 -->
         <el-form ref="form" :model="addGoodsFormData" label-width="80px">
